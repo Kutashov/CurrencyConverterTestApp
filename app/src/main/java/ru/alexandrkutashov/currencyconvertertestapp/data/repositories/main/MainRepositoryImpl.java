@@ -1,30 +1,19 @@
 package ru.alexandrkutashov.currencyconvertertestapp.data.repositories.main;
 
 import android.os.AsyncTask;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.simpleframework.xml.core.Persister;
-import org.w3c.dom.Document;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import ru.alexandrkutashov.currencyconvertertestapp.CurrencyApplication;
-import ru.alexandrkutashov.currencyconvertertestapp.data.models.network.Currency;
 import ru.alexandrkutashov.currencyconvertertestapp.data.models.network.CurrencyResponse;
 import ru.alexandrkutashov.currencyconvertertestapp.data.providers.HttpGetConnection;
 import ru.alexandrkutashov.currencyconvertertestapp.data.providers.LocalCache;
@@ -38,11 +27,19 @@ public class MainRepositoryImpl implements MainRepository {
     private static final String currencySite = "http://www.cbr.ru/scripts/XML_daily.asp";
 
     @Override
-    public void updateCurrencies() {
-        new UpdateCurrenciesTask().execute();
+    public void updateCurrencies(UpdateCurrenciesCallback callback) {
+        new UpdateCurrenciesTask(callback).execute();
     }
 
     static class UpdateCurrenciesTask extends AsyncTask<Void, Void, Void> {
+
+        private UpdateCurrenciesCallback callback;
+
+        private UpdateCurrenciesTask() {}
+
+        public UpdateCurrenciesTask(UpdateCurrenciesCallback callback) {
+            this.callback = callback;
+        }
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -52,8 +49,9 @@ public class MainRepositoryImpl implements MainRepository {
 
                 new LocalCache(CurrencyApplication.getApplication()).setCurrencies(fileToString(file));
 
+                callback.onCurrenciesUpdated();
             } catch (IOException e) {
-                e.printStackTrace();
+                callback.onCurrenciesUpdateError(e);
             }
             return null;
         }
@@ -86,17 +84,10 @@ public class MainRepositoryImpl implements MainRepository {
 
 
     @Override
-    @Nullable
-    public CurrencyResponse getCurrencies(String id) {
-        try {
-            File xmlFile = File.createTempFile("newdata", ".xml");
-            stringToFile(new LocalCache(CurrencyApplication.getApplication()).getCurrencies(), xmlFile);
-            return new Persister().read(CurrencyResponse.class, xmlFile);
-        } catch (IOException e) {
-            Log.e(MainRepositoryImpl.class.getName(), e.getMessage());
-        } catch (Exception e) {
-            Log.e(MainRepositoryImpl.class.getName(), e.getMessage());
-        }
-        return null;
+    public CurrencyResponse getCurrencies() throws Exception {
+
+        File xmlFile = File.createTempFile("newdata", ".xml");
+        stringToFile(new LocalCache(CurrencyApplication.getApplication()).getCurrencies(), xmlFile);
+        return new Persister().read(CurrencyResponse.class, xmlFile);
     }
 }

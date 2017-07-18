@@ -2,6 +2,10 @@ package ru.alexandrkutashov.currencyconvertertestapp;
 
 import android.app.Application;
 
+import ru.alexandrkutashov.currencyconvertertestapp.business.main.CurrencyInteractor;
+import ru.alexandrkutashov.currencyconvertertestapp.business.main.CurrencyInteractorImpl;
+import ru.alexandrkutashov.currencyconvertertestapp.data.repositories.main.MainRepository;
+import ru.alexandrkutashov.currencyconvertertestapp.data.repositories.main.MainRepositoryImpl;
 import ru.alexandrkutashov.currencyconvertertestapp.ui.main.presenter.CurrencyPresenter;
 import ru.alexandrkutashov.currencyconvertertestapp.ui.main.presenter.CurrencyPresenterImpl;
 
@@ -12,8 +16,11 @@ import ru.alexandrkutashov.currencyconvertertestapp.ui.main.presenter.CurrencyPr
 public class CurrencyApplication extends Application {
 
     private static CurrencyApplication application;
+
+    private MainRepository mainRepository;
+    private CurrencyInteractor currencyInteractor;
     private CurrencyPresenter currencyPresenter;
-    
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -22,7 +29,9 @@ public class CurrencyApplication extends Application {
     }
 
     private void buildDependecies() {
-        currencyPresenter = new CurrencyPresenterImpl();
+        mainRepository = new MainRepositoryImpl();
+        currencyInteractor = new CurrencyInteractorImpl(this, mainRepository);
+        currencyPresenter = new CurrencyPresenterImpl(currencyInteractor);
     }
 
     public static CurrencyApplication getApplication() {
@@ -32,4 +41,8 @@ public class CurrencyApplication extends Application {
     public CurrencyPresenter getCurrencyPresenter() {
         return currencyPresenter;
     }
+
+    public CurrencyInteractor getCurrencyInteractor() { return currencyInteractor; }
+
+    public MainRepository getMainRepository() { return mainRepository; }
 }

@@ -1,5 +1,9 @@
 package ru.alexandrkutashov.currencyconvertertestapp.data.repositories.main;
 
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
+
 import ru.alexandrkutashov.currencyconvertertestapp.data.models.network.CurrencyResponse;
 
 /**
@@ -8,6 +12,8 @@ import ru.alexandrkutashov.currencyconvertertestapp.data.models.network.Currency
 
 public interface MainRepository {
 
-    void updateCurrencies();
-    CurrencyResponse getCurrencies(String id);
+    void updateCurrencies(UpdateCurrenciesCallback callback);
+
+    @Nullable
+    CurrencyResponse getCurrencies() throws Exception;
 }

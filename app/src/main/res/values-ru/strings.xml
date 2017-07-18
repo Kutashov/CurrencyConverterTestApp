@@ -3,5 +3,5 @@
     <string name="app_name">CurrencyConverterTestApp</string>
     <string name="convert_hint">Введите количество для перевода здесь</string>
     <string name="no_internet">Проверьте интернет-соединение и попытайтесь снова</string>
-    <string name="undefined_error">При подключении произошла ошибка. Попытайтесь еще раз позже</string>
+    <string name="undefined_error">При конвертации произошла ошибка. Попытайтесь еще раз позже</string>
 </resources>

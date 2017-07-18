@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 public interface CurrencyView {
 
     void setAdapter(ArrayAdapter adapter);
-    void updateSpinnersSelection();
+    void updateSpinnersSelection(int positionCurrencyFrom, int positionCurrencyTo);
     void showResult(String text);
     void showError(String text);
     void showProgress();

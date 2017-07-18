@@ -2,6 +2,8 @@ package ru.alexandrkutashov.currencyconvertertestapp.ui.main.view;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -12,6 +14,7 @@ import android.widget.Toast;
 
 import ru.alexandrkutashov.currencyconvertertestapp.CurrencyApplication;
 import ru.alexandrkutashov.currencyconvertertestapp.R;
+import ru.alexandrkutashov.currencyconvertertestapp.ui.main.model.CurrencyModel;
 import ru.alexandrkutashov.currencyconvertertestapp.ui.main.presenter.CurrencyPresenter;
 
 public class MainActivity extends AppCompatActivity implements CurrencyView {
@@ -44,11 +47,19 @@ public class MainActivity extends AppCompatActivity implements CurrencyView {
         amount = (ClearableEditText) findViewById(R.id.amount);
         loading = (ProgressBar) findViewById(R.id.loading);
         convertBtn = (ImageView) findViewById(R.id.convertBtn);
+        convertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currencyPresenter.onConvertButtonClicked((CurrencyModel) fromCurrency.getSelectedItem(),
+                        (CurrencyModel) toCurrency.getSelectedItem(),
+                        amount.getEditableText().toString());
+            }
+        });
         revertCurrencies = (ImageView) findViewById(R.id.revert_currencies);
         revertCurrencies.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onRevertButtonClicked();
+                currencyPresenter.onRevertButtonClicked();
             }
         });
     }
@@ -68,19 +79,13 @@ public class MainActivity extends AppCompatActivity implements CurrencyView {
     @Override
     public void setAdapter(ArrayAdapter adapter) {
         fromCurrency.setAdapter(adapter);
-        fromCurrency.setSelection(currencyPresenter.getSelectionFrom());
         toCurrency.setAdapter(adapter);
-        toCurrency.setSelection(currencyPresenter.getSelectionTo());
     }
 
     @Override
-    public void updateSpinnersSelection() {
-        fromCurrency.setSelection(currencyPresenter.getSelectionFrom());
-        toCurrency.setSelection(currencyPresenter.getSelectionTo());
-    }
-
-    public void onRevertButtonClicked() {
-        currencyPresenter.onRevertButtonClicked();
+    public void updateSpinnersSelection(int positionCurrencyFrom, int positionCurrencyTo) {
+        fromCurrency.setSelection(positionCurrencyFrom);
+        toCurrency.setSelection(positionCurrencyTo);
     }
 
     @Override
