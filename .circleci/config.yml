@@ -1,57 +1,13 @@
-# Java Gradle CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    working_directory: ~/repo
-
-    environment:
-      ANDROID_TARGET: android-23
-      ADB_INSTALL_TIMEOUT: 12
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
-
-    dependencies:
-      pre:
-        # workaround for "failed to find Build Tools revision xx"
-        # https://discuss.circleci.com/t/android-build-tools-23-0-2-not-available/455/3
-        - echo y | android update sdk --no-ui --all --filter platform-tools,tools,extra-android-m2repository,extra-google-m2repository,android-23
-        - echo y | android update sdk --no-ui --all --filter build-tools-23.0.3
-
-      override:
-        - sudo ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
-
+      - image: bitriseio/docker-android
+    working_directory: ~/CurrencyConverter
     steps:
       - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: gradle dependencies
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-
-      # run tests!
-      - run: gradle test
-
-
-
+      - run:
+          name: Assemble & Test
+          command: ./gradlew assembleDebug assembleDebugAndroidTest
+          environment:
+            TERM: dumb
