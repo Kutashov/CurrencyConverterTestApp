@@ -28,10 +28,10 @@ public class CurrencyApplication extends Application {
         buildDependecies();
     }
 
-    private void buildDependecies() {
+    protected void buildDependecies() {
         mainRepository = new MainRepositoryImpl();
         currencyInteractor = new CurrencyInteractorImpl(this, mainRepository);
-        currencyPresenter = new CurrencyPresenterImpl(currencyInteractor);
+        currencyPresenter = new CurrencyPresenterImpl(this, currencyInteractor);
     }
 
     public static CurrencyApplication getApplication() {

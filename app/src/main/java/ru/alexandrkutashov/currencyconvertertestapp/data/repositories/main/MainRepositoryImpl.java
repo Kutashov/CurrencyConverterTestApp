@@ -27,17 +27,17 @@ public class MainRepositoryImpl implements MainRepository {
     private static final String currencySite = "http://www.cbr.ru/scripts/XML_daily.asp";
 
     @Override
-    public void updateCurrencies(UpdateCurrenciesCallback callback) {
+    public void updateCurrencies(ExecuteCallback callback) {
         new UpdateCurrenciesTask(callback).execute();
     }
 
     static class UpdateCurrenciesTask extends AsyncTask<Void, Void, Void> {
 
-        private UpdateCurrenciesCallback callback;
+        private ExecuteCallback callback;
 
         private UpdateCurrenciesTask() {}
 
-        public UpdateCurrenciesTask(UpdateCurrenciesCallback callback) {
+        public UpdateCurrenciesTask(ExecuteCallback callback) {
             this.callback = callback;
         }
 
@@ -49,14 +49,13 @@ public class MainRepositoryImpl implements MainRepository {
 
                 new LocalCache(CurrencyApplication.getApplication()).setCurrencies(fileToString(file));
 
-                callback.onCurrenciesUpdated();
+                callback.onExecuted();
             } catch (IOException e) {
-                callback.onCurrenciesUpdateError(e);
+                callback.onExecuteError(e);
             }
             return null;
         }
     }
-
 
     @NonNull
     private static String fileToString(File file) throws IOException {
@@ -85,7 +84,6 @@ public class MainRepositoryImpl implements MainRepository {
 
     @Override
     public CurrencyResponse getCurrencies() throws Exception {
-
         File xmlFile = File.createTempFile("newdata", ".xml");
         stringToFile(new LocalCache(CurrencyApplication.getApplication()).getCurrencies(), xmlFile);
         return new Persister().read(CurrencyResponse.class, xmlFile);

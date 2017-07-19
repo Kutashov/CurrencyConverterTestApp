@@ -31,4 +31,9 @@ public class CurrencyModel {
     public void setCharCode(String charCode) {
         this.charCode = charCode;
     }
+
+    @Override
+    public String toString() {
+        return charCode;
+    }
 }

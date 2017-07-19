@@ -14,7 +14,7 @@
         android:orientation="horizontal">
 
         <Spinner
-            android:id="@+id/from"
+            android:id="@+id/fromCurrency"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
@@ -31,7 +31,7 @@
             android:background="@android:drawable/ic_menu_revert" />
 
         <Spinner
-            android:id="@+id/to"
+            android:id="@+id/toCurrency"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
@@ -90,7 +90,7 @@
 
 
     <TextView
-        android:id="@+id/transfer_result"
+        android:id="@+id/conversion_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp" />

@@ -3,15 +3,18 @@ package ru.alexandrkutashov.currencyconvertertestapp.business.main;
 import android.content.Context;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import ru.alexandrkutashov.currencyconvertertestapp.R;
 import ru.alexandrkutashov.currencyconvertertestapp.business.main.model.ConversionResult;
+import ru.alexandrkutashov.currencyconvertertestapp.business.main.model.CurrencyListResult;
 import ru.alexandrkutashov.currencyconvertertestapp.data.models.network.Currency;
 import ru.alexandrkutashov.currencyconvertertestapp.data.repositories.main.MainRepository;
-import ru.alexandrkutashov.currencyconvertertestapp.data.repositories.main.UpdateCurrenciesCallback;
+import ru.alexandrkutashov.currencyconvertertestapp.data.repositories.main.ExecuteCallback;
 import ru.alexandrkutashov.currencyconvertertestapp.ui.main.model.CurrencyModel;
+import ru.alexandrkutashov.currencyconvertertestapp.ui.main.presenter.UpdateCurrenciesCallback;
 
 /**
  * Created by Alexandr on 18.07.2017.
@@ -32,7 +35,7 @@ public class CurrencyInteractorImpl implements CurrencyInteractor {
     public ConversionResult convertCurrency(CurrencyModel from, CurrencyModel to, String value) {
 
         try {
-            HashMap<String, Currency> currencies = getCurrencyList();
+            HashMap<String, Currency> currencies = getCurrencyMap();
 
             if (currencies.size() == 0) {
                 return new ConversionResult(context.getString(R.string.no_internet));
@@ -51,7 +54,7 @@ public class CurrencyInteractorImpl implements CurrencyInteractor {
         }
     }
 
-    private HashMap<String, Currency> getCurrencyList() throws Exception {
+    public HashMap<String, Currency> getCurrencyMap() throws Exception {
         if (currencyList == null) {
             updateCurrencyList();
         }
@@ -61,6 +64,8 @@ public class CurrencyInteractorImpl implements CurrencyInteractor {
     private void updateCurrencyList() throws Exception {
         if (currencyList != null) {
             currencyList.clear();
+        } else {
+            currencyList = new HashMap<>();
         }
 
         List<Currency> items = mainRepository.getCurrencies().getCurrencyList();
@@ -70,21 +75,35 @@ public class CurrencyInteractorImpl implements CurrencyInteractor {
     }
 
     @Override
-    public void updateCurrencies() {
-        mainRepository.updateCurrencies(new UpdateCurrenciesCallback() {
+    public void updateCurrencies(final UpdateCurrenciesCallback callback) {
+        mainRepository.updateCurrencies(new ExecuteCallback() {
             @Override
-            public void onCurrenciesUpdated() {
+            public void onExecuted() {
                 try {
                     updateCurrencyList();
+                    callback.onCurrenciesUpdated();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void onCurrenciesUpdateError(Exception e) {
-
+            public void onExecuteError(Exception e) {
+                callback.onError(context.getString(R.string.no_internet));
             }
         });
+    }
+
+    @Override
+    public CurrencyListResult getCurrencyList() {
+        List<CurrencyModel> list = new ArrayList<>();
+        try {
+            for (Currency item : getCurrencyMap().values()) {
+                list.add(new CurrencyModel(item.getId(), item.getCharCode()));
+            }
+        } catch (Exception e) {
+            return new CurrencyListResult(list);
+        }
+        return new CurrencyListResult(list);
     }
 }

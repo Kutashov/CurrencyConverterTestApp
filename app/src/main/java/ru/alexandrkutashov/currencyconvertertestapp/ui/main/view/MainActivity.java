@@ -2,8 +2,6 @@ package ru.alexandrkutashov.currencyconvertertestapp.ui.main.view;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -21,19 +19,19 @@ public class MainActivity extends AppCompatActivity implements CurrencyView {
 
     private CurrencyPresenter currencyPresenter = CurrencyApplication.getApplication().getCurrencyPresenter();
 
-    Spinner fromCurrency;
+    private Spinner fromCurrency;
 
-    Spinner toCurrency;
+    private Spinner toCurrency;
 
-    TextView result;
+    private TextView result;
 
-    ClearableEditText amount;
+    private ClearableEditText amount;
 
-    ProgressBar loading;
+    private ProgressBar loading;
 
-    ImageView revertCurrencies;
+    private ImageView revertCurrencies;
 
-    ImageView convertBtn;
+    private ImageView convertBtn;
 
 
     @Override
@@ -41,9 +39,9 @@ public class MainActivity extends AppCompatActivity implements CurrencyView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fromCurrency = (Spinner) findViewById(R.id.from);
-        toCurrency = (Spinner) findViewById(R.id.to);
-        result = (TextView) findViewById(R.id.transfer_result);
+        fromCurrency = (Spinner) findViewById(R.id.fromCurrency);
+        toCurrency = (Spinner) findViewById(R.id.toCurrency);
+        result = (TextView) findViewById(R.id.conversion_result);
         amount = (ClearableEditText) findViewById(R.id.amount);
         loading = (ProgressBar) findViewById(R.id.loading);
         convertBtn = (ImageView) findViewById(R.id.convertBtn);
@@ -59,9 +57,16 @@ public class MainActivity extends AppCompatActivity implements CurrencyView {
         revertCurrencies.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currencyPresenter.onRevertButtonClicked();
+                currencyPresenter.onRevertButtonClicked(
+                        fromCurrency.getSelectedItemPosition(), toCurrency.getSelectedItemPosition());
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        currencyPresenter.onStart();
     }
 
     @Override
